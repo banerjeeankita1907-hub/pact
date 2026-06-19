@@ -28,6 +28,8 @@
             padding: 2rem 1rem;
         }
         .container { width: 100%; max-width: 600px; }
+
+        /* Hero */
         .hero {
             text-align: center;
             margin-bottom: 2.5rem;
@@ -44,7 +46,24 @@
             font-size: 1.2rem;
             color: var(--subtle);
             letter-spacing: 0.5px;
+            margin-bottom: 1rem;
         }
+        .share-top-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .share-top-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+        }
+
+        /* Stats */
         .stats {
             display: flex;
             gap: 1rem;
@@ -66,6 +85,8 @@
             -webkit-text-fill-color: transparent;
         }
         .stat-label { font-size: 0.85rem; color: var(--subtle); margin-top: 0.2rem; }
+
+        /* Cards */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -74,6 +95,8 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
+
+        /* Form */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -96,6 +119,7 @@
         .form-group input:focus, .form-group select:focus {
             border-color: var(--accent);
         }
+
         .btn {
             width: 100%;
             padding: 0.9rem;
@@ -117,8 +141,15 @@
         .btn-checkin {
             background: var(--success);
             color: #0a0a0a;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
         }
+
+        /* Pact list */
         .pact-list {
             list-style: none;
         }
@@ -131,6 +162,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         .pact-info h3 {
             font-size: 1.1rem;
@@ -148,30 +181,96 @@
             border-radius: 8px;
             cursor: pointer;
         }
+
+        /* Future vision */
         .future {
             background: var(--glass);
             border: 1px dashed rgba(255,255,255,0.2);
             border-radius: 14px;
-            padding: 1rem;
+            padding: 1.2rem;
             margin-top: 2rem;
             text-align: center;
             color: var(--subtle);
             font-size: 0.9rem;
         }
         .future strong { color: var(--accent); }
+
+        /* Footer */
         .footer {
             margin-top: 2rem;
             color: var(--subtle);
             font-size: 0.8rem;
             text-align: center;
         }
+
+        /* Modal (for share prompt) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,242,254,0.2);
+        }
+        .modal h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        .modal p {
+            color: var(--subtle);
+            margin-bottom: 1.5rem;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .modal-btn.share {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #0a0a0a;
+        }
+        .modal-btn.close {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Hero -->
         <div class="hero">
             <h1>⚡ Pact</h1>
             <p class="subtitle">Commit. Succeed. Earn.</p>
+            <button class="share-top-btn" onclick="copyShareLink()">📤 Share Pact</button>
         </div>
 
         <!-- Stats -->
@@ -221,7 +320,20 @@
         </div>
     </div>
 
+    <!-- Share Prompt Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal">
+            <h3>🔥 Enjoying Pact?</h3>
+            <p>Copy a ready‑made message and share Pact with a friend. They'll thank you when they hit their first streak!</p>
+            <div class="modal-actions">
+                <button class="modal-btn share" onclick="shareFromModal()">📋 Copy & Share</button>
+                <button class="modal-btn close" onclick="closeModal()">Maybe later</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // --- LocalStorage Logic ---
         function getPacts() {
             const raw = localStorage.getItem('pact_data');
             return raw ? JSON.parse(raw) : [];
@@ -230,6 +342,7 @@
             localStorage.setItem('pact_data', JSON.stringify(pacts));
             render();
         }
+
         function render() {
             const pacts = getPacts();
             const listEl = document.getElementById('pactList');
@@ -247,8 +360,8 @@
                                 <h3>${escapeHtml(p.goal)}</h3>
                                 <span>${p.frequency} · Last: ${lastCheck} · <span class="streak">🔥 ${streak} day streak</span></span>
                             </div>
-                            <div style="display:flex; gap:0.5rem;">
-                                <button class="btn-checkin" onclick="checkIn(${idx})" style="padding:0.4rem 1rem;">✅ Check‑in</button>
+                            <div style="display:flex; gap:0.5rem; align-items:center;">
+                                <button class="btn-checkin" onclick="checkIn(${idx})">✅ Check‑in</button>
                                 <button class="delete-btn" onclick="deletePact(${idx})">✕</button>
                             </div>
                         </li>`;
@@ -281,7 +394,6 @@
                 alert("You already checked in today! Consistency is key 🚀");
                 return;
             }
-            // Streak logic: if last check was yesterday, increment streak; else reset to 1
             const yesterday = new Date(Date.now() - 86400000).toDateString();
             pact.streak = (last === yesterday) ? (pact.streak + 1) : 1;
             pact.lastCheck = new Date().toISOString();
@@ -297,6 +409,34 @@
             }
         }
 
+        // --- Share Functions ---
+        function copyShareLink() {
+            const shareText = "I just started using Pact – a free commitment tracker that turns goals into streaks. Check it out: " + window.location.href;
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert("Link and message copied! Send it to a friend or post it anywhere.");
+            }).catch(() => {
+                prompt("Copy this message:", shareText);
+            });
+        }
+
+        function shareFromModal() {
+            copyShareLink();
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('shareModal').classList.remove('active');
+            localStorage.setItem('pact_prompt_shown', '1');
+        }
+
+        // --- Delayed Share Prompt (after 30 seconds) ---
+        setTimeout(() => {
+            if (!localStorage.getItem('pact_prompt_shown')) {
+                document.getElementById('shareModal').classList.add('active');
+            }
+        }, 30000);
+
+        // Initial render
         render();
     </script>
 </body>
