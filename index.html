@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pact — Commit. Succeed. Earn.</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: rgba(255,255,255,0.04);
+            --glass: rgba(255,255,255,0.08);
+            --accent: #00f2fe;
+            --accent2: #4facfe;
+            --text: #f0f0f0;
+            --subtle: #a0a0a0;
+            --danger: #ff4d6a;
+            --success: #00d68f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        .container { width: 100%; max-width: 600px; }
+        .hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--subtle);
+            letter-spacing: 0.5px;
+        }
+        .stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-box {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 1.2rem;
+            backdrop-filter: blur(12px);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--subtle); margin-top: 0.2rem; }
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--subtle);
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+        }
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #0a0a0a;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+        }
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0,242,254,0.4);
+        }
+        .btn-checkin {
+            background: var(--success);
+            color: #0a0a0a;
+            margin-top: 1rem;
+        }
+        .pact-list {
+            list-style: none;
+        }
+        .pact-item {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pact-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+        .pact-info .streak {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .delete-btn {
+            background: transparent;
+            border: 1px solid rgba(255,77,106,0.5);
+            color: var(--danger);
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .future {
+            background: var(--glass);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 14px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--subtle);
+            font-size: 0.9rem;
+        }
+        .future strong { color: var(--accent); }
+        .footer {
+            margin-top: 2rem;
+            color: var(--subtle);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>⚡ Pact</h1>
+            <p class="subtitle">Commit. Succeed. Earn.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="activePacts">0</div>
+                <div class="stat-label">Active Pacts</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="bestStreak">0</div>
+                <div class="stat-label">Best Streak</div>
+            </div>
+        </div>
+
+        <!-- New Pact Form -->
+        <div class="card">
+            <h2>🔖 Create a Pact</h2>
+            <div class="form-group">
+                <label for="goalName">What do you want to achieve?</label>
+                <input type="text" id="goalName" placeholder="e.g., Morning run 5km, No junk food, Code for 2 hours...">
+            </div>
+            <div class="form-group">
+                <label for="frequency">Check‑in frequency</label>
+                <select id="frequency">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="createPact()">✍️ Sign the Pact</button>
+        </div>
+
+        <!-- Active Pacts -->
+        <h2 style="margin-bottom: 1rem;">📋 Your Pacts</h2>
+        <ul class="pact-list" id="pactList">
+            <li class="pact-item" style="opacity:0.6;">No pacts yet. Create one to start.</li>
+        </ul>
+
+        <!-- Future Vision -->
+        <div class="future">
+            <strong>🚀 Coming soon:</strong> Stake crypto on your goals, challenge friends, and earn rewards for consistency.
+            <br>Pact is building the world's first commitment protocol — a new economy powered by human willpower.
+        </div>
+
+        <div class="footer">
+            <p>🔒 Your data never leaves your device. No sign‑up required.</p>
+            <p>Built by a solo founder with zero budget. Version 0.1</p>
+        </div>
+    </div>
+
+    <script>
+        function getPacts() {
+            const raw = localStorage.getItem('pact_data');
+            return raw ? JSON.parse(raw) : [];
+        }
+        function savePacts(pacts) {
+            localStorage.setItem('pact_data', JSON.stringify(pacts));
+            render();
+        }
+        function render() {
+            const pacts = getPacts();
+            const listEl = document.getElementById('pactList');
+            let bestStreak = 0;
+            if (pacts.length === 0) {
+                listEl.innerHTML = '<li class="pact-item" style="opacity:0.6;">No pacts yet. Create one to start.</li>';
+            } else {
+                listEl.innerHTML = pacts.map((p, idx) => {
+                    const streak = p.streak || 0;
+                    if (streak > bestStreak) bestStreak = streak;
+                    const lastCheck = p.lastCheck ? new Date(p.lastCheck).toDateString() : 'Never';
+                    return `
+                        <li class="pact-item">
+                            <div class="pact-info">
+                                <h3>${escapeHtml(p.goal)}</h3>
+                                <span>${p.frequency} · Last: ${lastCheck} · <span class="streak">🔥 ${streak} day streak</span></span>
+                            </div>
+                            <div style="display:flex; gap:0.5rem;">
+                                <button class="btn-checkin" onclick="checkIn(${idx})" style="padding:0.4rem 1rem;">✅ Check‑in</button>
+                                <button class="delete-btn" onclick="deletePact(${idx})">✕</button>
+                            </div>
+                        </li>`;
+                }).join('');
+            }
+            document.getElementById('activePacts').textContent = pacts.length;
+            document.getElementById('bestStreak').textContent = bestStreak;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+        }
+
+        function createPact() {
+            const goal = document.getElementById('goalName').value.trim();
+            const freq = document.getElementById('frequency').value;
+            if (!goal) return alert('Please enter a goal.');
+            const pacts = getPacts();
+            pacts.push({ goal, frequency: freq, streak: 0, lastCheck: null });
+            savePacts(pacts);
+            document.getElementById('goalName').value = '';
+        }
+
+        function checkIn(idx) {
+            const pacts = getPacts();
+            const pact = pacts[idx];
+            const today = new Date().toDateString();
+            const last = pact.lastCheck ? new Date(pact.lastCheck).toDateString() : null;
+            if (last === today) {
+                alert("You already checked in today! Consistency is key 🚀");
+                return;
+            }
+            // Streak logic: if last check was yesterday, increment streak; else reset to 1
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            pact.streak = (last === yesterday) ? (pact.streak + 1) : 1;
+            pact.lastCheck = new Date().toISOString();
+            pacts[idx] = pact;
+            savePacts(pacts);
+        }
+
+        function deletePact(idx) {
+            if (confirm('Remove this pact?')) {
+                const pacts = getPacts();
+                pacts.splice(idx, 1);
+                savePacts(pacts);
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
